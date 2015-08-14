@@ -5,12 +5,11 @@ import org.apache.spark.SparkConf
 
 object PageRankApp {
   def main(args: Array[String]) {
-    val articlesFile = "/Users/drewnoff/hackspace/spark/ampcamp5/data/graphx/graphx-wiki-vertices.txt"
-    val edgesFile = "/Users/drewnoff/hackspace/spark/ampcamp5/data/graphx/graphx-wiki-edges.txt"
     val iterations = args(0).toInt
+    val articlesFile = args(1)
+    val edgesFile =  args(2)
     val conf = (new SparkConf()
       .setAppName("Wiki Page Rank")
-      .setMaster("local[*]")
     )
 
     println(s"starting page rank with $iterations iterations")
@@ -38,7 +37,6 @@ object PageRankApp {
         .mapValues(0.15 + 0.85 * _)
     }
 
-    println("Top 10 ranking")
     articles.join(ranks).top(10) {
       Ordering.by((entry: (Long, (String, Double))) => entry._2._2)
     }.foreach(t => println(t._2._2 + ": " + t._2._1))
